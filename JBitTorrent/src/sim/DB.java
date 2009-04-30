@@ -16,7 +16,7 @@ public class DB {
     	
     	   String userName = "edt";
            String password = "edt";
-           String url = "jdbc:mysql://192.168.1.50/EasyDialogWebSiteTest";
+           String url = "jdbc:mysql://192.168.1.70/EasyDialogWebSiteTest";
            Class.forName ("com.mysql.jdbc.Driver").newInstance ();
            connection = DriverManager.getConnection (url, userName, password);
            System.out.println ("Database connection established");
@@ -25,37 +25,40 @@ public class DB {
        statement.setQueryTimeout(30);  // set timeout to 30 sec.
       
        statement.executeUpdate("create table if not exists peer (id varchar(255) primary key, bandwidth double, availability  double, reliability  double)");
+       System.out.println("started DB");
     }
     catch(Exception e)
     {
-      // if the error message is "out of memory", 
-      // it probably means no database file is found
-      System.err.println(e.getMessage());
+      
+      e.printStackTrace();
     }
 	}
-	static public void update(String id, double bw, double av, double re){
+	static public synchronized void update(String id, double bw, double av, double re){
 		try{
 	       Statement statement = connection.createStatement();
 	       statement.executeUpdate("replace into peer (id , bandwidth , availability  , reliability  ) values ('"+id+"',"+bw+","+av+","+re+")");
+	       System.out.println("updated for " + id +" with " + bw +"|"+av+"|"+re);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 	}
-	static public double getAvg(String id){
+	static public synchronized double getAvg(String id){
 		try{
 			Statement statement = connection.createStatement();
 		      ResultSet rs = statement.executeQuery("select * from peer where id='"+id+"'");
 		      while(rs.next())
 		      {
-		        return (rs.getDouble("bandwidth")+rs.getDouble("availability")+rs.getDouble("reliability"))/3;
+		    	  double avg =  (rs.getDouble("bandwidth")+rs.getDouble("availability")+rs.getDouble("reliability"))/3;
+		    	  System.out.println("avg of "+id + " = " + avg);
+		    	  return avg;
 		      }
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return 5;
 	}
-	static public void close(){
+	static public synchronized void close(){
 		try {
 			connection.close();
 		} catch (SQLException e) {
