@@ -55,6 +55,7 @@ public class DLRateComparator implements Comparator {
      *   argument is less than, equal to, or greater than the second.
      */
     public int compare(Object a, Object b) {
+    	System.out.println("inside normal comparator");
         if (a instanceof Peer && b instanceof Peer)
             if (((Peer) a).getDLRate(false) > ((Peer) b).getDLRate(false))
                 return -1;

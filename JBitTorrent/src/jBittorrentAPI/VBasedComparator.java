@@ -57,6 +57,7 @@ public class VBasedComparator implements Comparator {
      *   argument is less than, equal to, or greater than the second.
      */
     public int compare(Object a, Object b) {
+    	System.out.println("Inside v comparaotr");
         if (a instanceof Peer && b instanceof Peer)
             if (DB.getAvg(((Peer) a).getID()) > DB.getAvg(((Peer) b).getID()))
                 return -1;
