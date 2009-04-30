@@ -49,6 +49,8 @@ public class
     public static final String BYTE_ENCODING = "ISO-8859-1";
     public static Charset BYTE_CHARSET;
     public static Charset DEFAULT_CHARSET;
+    
+    public static boolean COMAPRE_BY_V = false;
 
     static {
         try {
@@ -65,6 +67,12 @@ public class
     public static final String CLIENT = "jBittorrentAPI 1.0";
     public static String SAVEPATH = "downloads/";
 
+    public static int DOWNRATE = 4;
+    public static int UPRATE = 4;    
+    
+    public static double AV = 10;
+    public static double RE = 10;
+    
     public static final String OSName = System.getProperty("os.name");
 
     public static final boolean isOSX = OSName.toLowerCase().startsWith(
