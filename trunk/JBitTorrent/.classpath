@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="ext/xalan.jar"/>
 	<classpathentry kind="lib" path="ext/xerces.jar"/>
 	<classpathentry kind="lib" path="ext/xml-apis.jar"/>
+	<classpathentry kind="lib" path="mysql-connector-java-3.0.11-stable-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
