@@ -120,6 +120,8 @@ public class DownloadTask extends Thread implements IncomingListener,
 
                 this.is = this.peerConnection.getInputStream();
                 this.os = this.peerConnection.getOutputStream();
+                this.peerConnection.setReceiveBufferSize(Constants.DOWNRATE);
+                this.peerConnection.setSendBufferSize(Constants.UPRATE);
                 this.peer = new Peer();
                 this.peer.setIP(peerIP);
                 this.peer.setPort(peerPort);

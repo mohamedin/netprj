@@ -44,7 +44,7 @@ import java.util.ArrayList;
  * Simple example to show how it is possible to create a new .torrent file to
  * share files using bittorrent protocol
  */
-class ExampleCreateTorrent{
+public class ExampleCreateTorrent{
     public static void main(String[] args){
         if(args.length < 5){
             System.err.println("Wrong parameter number\r\n\r\nUse:\r\n" +

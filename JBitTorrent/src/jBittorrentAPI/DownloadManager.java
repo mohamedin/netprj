@@ -42,6 +42,8 @@ import java.io.*;
 import java.net.Socket;
 import java.net.InetAddress;
 
+import sim.FileCompleteListener;
+
 /**
  * Object that manages all concurrent downloads. It chooses which piece to request
  * to which peer.
@@ -174,8 +176,11 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (this.isComplete())
+            if (this.isComplete()){
+            	if(listener!=null)
+            		listener.fileCompleted();
                 System.out.println("\r\nSharing... Press Ctrl+C to stop client");
+            }
         }
         /*
                  new IOManager().readUserInput(
@@ -889,6 +894,19 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
         } catch (Exception e) {
             return 0.00f;
         }
+    }
+
+    private FileCompleteListener listener;
+    
+    public void addFileCompleteListener(FileCompleteListener listener){
+    	this.listener = listener;
+    }
+    public void destroy(){
+    	for(Iterator<DownloadTask> itr=task.values().iterator(); itr.hasNext(); )
+    		try {
+    			itr.next().end();
+			} catch (Exception e) {
+			}
     }
 
 
