@@ -5,7 +5,6 @@ import jBittorrentAPI.TorrentFile;
 import jBittorrentAPI.TorrentProcessor;
 import jBittorrentAPI.Utils;
 
-import java.awt.Dialog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -172,10 +171,11 @@ public class PeerProcess implements FileCompleteListener{
 							jBittorrentAPI.Constants.UPRATE = uploadRate;
 							jBittorrentAPI.Constants.AV = duration;
 							jBittorrentAPI.Constants.RE = reliablity;
-							DB.update(id, 4, duration, reliablity);
 							
 							if (t != null) {
-								dm = new DownloadManager(t,	Utils.generateID());
+								byte[] bid = Utils.generateID();
+								DB.update(Utils.byteArrayToByteString(bid), 4, duration, reliablity);
+								dm = new DownloadManager(t,	bid);
 								dm.addFileCompleteListener(PeerProcess.this);
 								dm.startListening(6881, 6889);
 								dm.startTrackerUpdate();
