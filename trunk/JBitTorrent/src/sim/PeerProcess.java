@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class PeerProcess implements FileCompleteListener{
@@ -22,9 +21,9 @@ public class PeerProcess implements FileCompleteListener{
 	
 	private Thread sharingThread;
 	private DownloadManager dm;
-	
-	private JDialog dialog;
-	private JOptionPane messageBox;
+//	
+//	private JDialog dialog;
+//	private JOptionPane messageBox;
 	
 	public PeerProcess(String id, 
 			int duration, int reliablity, 
@@ -35,15 +34,15 @@ public class PeerProcess implements FileCompleteListener{
 		this.uploadRate = uploadRate;
 		this.downloadRate = downloadRate;
 		getPeerFolder().mkdirs();
-		messageBox = new JOptionPane("Peer Started...");
-		new Thread(){
-			@Override
-			public void run() {
-				dialog = messageBox.createDialog(new JFrame(), PeerProcess.this.id);
-				dialog.show();
-			    System.exit(0);
-			}
-		}.start();
+//		messageBox = new JOptionPane("Peer Started...");
+//		new Thread(){
+//			@Override
+//			public void run() {
+//				dialog = messageBox.createDialog(new JFrame(), PeerProcess.this.id);
+//				dialog.show();
+//			    System.exit(0);
+//			}
+//		}.start();
 	}
 	
 	protected File getPeerFolder(){
@@ -52,7 +51,7 @@ public class PeerProcess implements FileCompleteListener{
 	
 	protected void log(String message){
 		System.out.println(id + " >>" + message);
-		messageBox.setMessage(message);
+//		messageBox.setMessage(message);
 	}
 
 	private void lock(){
@@ -70,7 +69,7 @@ public class PeerProcess implements FileCompleteListener{
 	}
 	
 	public void fileCompleted() {
-		dialog.setTitle(id + "- SEEDER");
+//		dialog.setTitle(id + "- SEEDER");
 		File file = new File(getPeerFolder(), "complete");
 		if(!file.exists())
 			try {
@@ -81,7 +80,7 @@ public class PeerProcess implements FileCompleteListener{
 	}
 	
 	private void sleep(long mislli){
-		messageBox.setMessage(messageBox.getMessage() + ": stay for " + (mislli/1000) + " seconds");
+//		messageBox.setMessage(messageBox.getMessage() + ": stay for " + (mislli/1000) + " seconds");
 		try {
 			Thread.sleep(Constants.TIMEOUT);
 		} catch (InterruptedException e) {
