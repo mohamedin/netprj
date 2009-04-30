@@ -14,7 +14,10 @@ public class PeerProcessManager{
 	private int reliablity;
 	private int uploadRate, downloadRate;
 	
+	private boolean alive = false;
 	private Process process;
+	
+	private Thread workingThread;
 	
 	public PeerProcessManager(String id, 
 			int duration, int reliablity, 
@@ -36,6 +39,47 @@ public class PeerProcessManager{
 	
 	public void start() throws IOException{
 		new Thread(){
+			public void run() {
+				long activePeriod = reliablity * Constants.MILLI_IN_MINUTE;
+				long awayPeriod = (Constants.DAY - duration) * Constants.MILLI_IN_MINUTE;
+				
+				while(true){
+					log("Started");
+					try{
+						alive = true;
+						long lifePeriod = duration * Constants.MILLI_IN_MINUTE;
+						while(lifePeriod > 0){
+							log("Connected");
+							connect();
+							sleep(activePeriod);
+							log("Disconnected");
+							try {
+								disconnect();						
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							sleep(Constants.TIMEOUT);
+							lifePeriod -= activePeriod;
+							lifePeriod -= Constants.TIMEOUT;
+						}
+						log("Died");
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} finally{
+						alive = false;
+					}
+					try {
+						sleep(awayPeriod);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+	}
+	
+	private void connect(){
+		workingThread = new Thread(){
 			public void run() {
 				List<String> command = new ArrayList<String>();
 				command.add("java");
@@ -63,22 +107,21 @@ public class PeerProcessManager{
 				} finally{
 					log("Program terminated!");					
 				}
-//				new PeerProcess(id, duration, reliablity, uploadRate, downloadRate).start();
 			}
-		}.start();
-
+		};
+		
+		workingThread.start();
 	}
 	
-	public void kill(){
+	public void disconnect(){
 		process.destroy();
 	}
 	
 	public boolean isAlive(){
-		return new File(getPeerFolder(), "lock").exists();
+		return alive;
 	}
 	
 	public boolean isSeeder(){
 		return new File(getPeerFolder(), "complete").exists();
 	}
-
 }
