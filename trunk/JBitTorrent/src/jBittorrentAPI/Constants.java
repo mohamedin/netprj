@@ -50,7 +50,7 @@ public class
     public static Charset BYTE_CHARSET;
     public static Charset DEFAULT_CHARSET;
     
-    public static boolean COMAPRE_BY_V = false;
+    public static boolean COMAPRE_BY_V = true;
 
     static {
         try {
