@@ -221,6 +221,7 @@ public class PeerProcess implements FileCompleteListener{
 	}
 	
 	public static void main(String[] args) throws NumberFormatException, InterruptedException {
+		DB.update("dummy", 0, 0, 0);
 		if(args==null || args.length<5)
 			System.out.println("Invalid usage...");
 		else
