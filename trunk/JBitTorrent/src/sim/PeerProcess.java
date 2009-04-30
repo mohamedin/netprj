@@ -81,7 +81,7 @@ public class PeerProcess implements FileCompleteListener{
 	}
 	
 	private void sleep(long mislli){
-		messageBox.setMessage(messageBox.getMessage() + ": sleep for " + (mislli/1000) + " seconds");
+		messageBox.setMessage(messageBox.getMessage() + ": stay for " + (mislli/1000) + " seconds");
 		try {
 			Thread.sleep(Constants.TIMEOUT);
 		} catch (InterruptedException e) {
@@ -95,22 +95,22 @@ public class PeerProcess implements FileCompleteListener{
 		long awayPeriod = (Constants.DAY - duration) * Constants.MILLI_IN_MINUTE;
 		
 		while(!killer.exists()){
+			log("Started");
 			try{
 				lock();
-				log("Started");
-				connect();
 				long lifePeriod = duration * Constants.MILLI_IN_MINUTE;
 				while(lifePeriod > 0 && !killer.exists()){
+					System.out.println(lifePeriod + " " + activePeriod);
+					log("Connected");
 					connect();
 					sleep(activePeriod);
-					log("Disconnect");
+					log("Disconnected");
 					disconnect();
 					sleep(Constants.TIMEOUT);
 					lifePeriod -= activePeriod;
 					lifePeriod -= Constants.TIMEOUT;
 				}
 				log("Died");
-				disconnect();
 			} finally{
 				release();
 			}
