@@ -17,8 +17,6 @@ public class PeerProcessManager{
 	private boolean alive = false;
 	private Process process;
 	
-	private Thread workingThread;
-	
 	public PeerProcessManager(String id, 
 			int duration, int reliablity, 
 			int uploadRate, int downloadRate){
@@ -60,7 +58,7 @@ public class PeerProcessManager{
 							}
 							sleep(Constants.TIMEOUT);
 							lifePeriod -= activePeriod;
-							lifePeriod -= Constants.TIMEOUT;
+//							lifePeriod -= Constants.TIMEOUT;
 						}
 						log("Died");
 					} catch (InterruptedException e) {
@@ -79,12 +77,12 @@ public class PeerProcessManager{
 	}
 	
 	private void connect(){
-		workingThread = new Thread(){
+		new Thread(){
 			public void run() {
 				List<String> command = new ArrayList<String>();
 				command.add("java");
 				command.add("-classpath");
-				command.add("#/JBitTorrent/bin;#/JBitTorrent/ext/ant.jar;#/JBitTorrent/ext/freemarker.jar;#/JBitTorrent/ext/groovy.jar;#/JBitTorrent/ext/jaxen-core.jar;#/JBitTorrent/ext/jaxen-jdom.jar;#/JBitTorrent/ext/jdom.jar;#/JBitTorrent/ext/kxml.jar;#/JBitTorrent/ext/saxpath.jar;#/JBitTorrent/ext/simple-upload-0.3.4.jar;#/JBitTorrent/ext/velocity.jar;#/JBitTorrent/ext/xalan.jar;#/JBitTorrent/ext/xerces.jar;#/JBitTorrent/ext/xml-apis.jar".replaceAll("#", Constants.WOKING_DIR.replaceAll("\\\\", "/")));
+				command.add("#JBitTorrent/bin;#JBitTorrent/ext/ant.jar;#JBitTorrent/ext/freemarker.jar;#JBitTorrent/ext/groovy.jar;#JBitTorrent/ext/jaxen-core.jar;#JBitTorrent/ext/jaxen-jdom.jar;#JBitTorrent/ext/jdom.jar;#JBitTorrent/ext/kxml.jar;#JBitTorrent/ext/saxpath.jar;#JBitTorrent/ext/simple-upload-0.3.4.jar;#JBitTorrent/ext/velocity.jar;#JBitTorrent/ext/xalan.jar;#JBitTorrent/ext/xerces.jar;#JBitTorrent/ext/xml-apis.jar;#JBitTorrent/mysql-connector-java-3.0.11-stable-bin.jar".replaceAll("#", Constants.WOKING_DIR.replaceAll("\\\\", "/")));
 				command.add("sim.PeerProcess");
 				command.add(String.valueOf(id));
 				command.add(String.valueOf(duration));
@@ -108,13 +106,15 @@ public class PeerProcessManager{
 					log("Program terminated!");					
 				}
 			}
-		};
-		
-		workingThread.start();
+		}.start();
 	}
 	
 	public void disconnect(){
-		process.destroy();
+		try {
+			process.destroy();			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean isAlive(){

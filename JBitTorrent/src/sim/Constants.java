@@ -1,8 +1,8 @@
 package sim;
 
 public interface Constants {
-	public static final long MILLI_IN_MINUTE = 1000 * 60;
-	public static final long TIMEOUT = 1 * Constants.MILLI_IN_MINUTE;	// 1 minute to cause connection timeout
+	public static final long MILLI_IN_MINUTE = 100 * 60;
+	public static final long TIMEOUT = Constants.MILLI_IN_MINUTE / 2;	// 1 minute to cause connection timeout
 
 	public static final String WOKING_DIR = "E:\\Mohamed.Workspace\\";
 	public static final String PEERS_FOLDER = WOKING_DIR + "JBitTorrent\\example\\";

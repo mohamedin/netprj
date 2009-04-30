@@ -12,6 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 public class Scheduler{
 	private static int counterGenerator = 0;
 	
@@ -31,6 +34,14 @@ public class Scheduler{
 	public Scheduler(int simulationTime, int schedulingUnit) {
 		this.collectingUnit = schedulingUnit;
 		this.simulationTime = simulationTime;
+		new Thread(){
+			@Override
+			public void run() {
+				new JOptionPane("Scheduler Started...\nPress the button to terminate!").createDialog(new JFrame(), "Scheduler").show();
+				for(Iterator<PeerProcessManager> itr=active.iterator(); itr.hasNext(); itr.next().disconnect());
+			    System.exit(0);
+			}
+		}.start();
 	}
 	
 	private void log(String message){
