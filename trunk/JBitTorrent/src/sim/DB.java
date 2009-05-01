@@ -2,23 +2,29 @@ package sim;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import trackerBT.Constants;
+import trackerBT.Utils;
+
 public class DB {
     static Connection connection = null;
+    static Connection connection2 = null;
 	static {
     // load the sqlite-JDBC driver using the current class loader
     
     try
     {
     	
-    	   String userName = "edt";
-           String password = "edt";
-           String url = "jdbc:mysql://192.168.1.70/EasyDialogWebSiteTest";
+    	   String userName = "root";
+           String password = "";
+           String url = "jdbc:mysql://localhost/test";
            Class.forName ("com.mysql.jdbc.Driver").newInstance ();
            connection = DriverManager.getConnection (url, userName, password);
+           connection2 = DriverManager.getConnection (url, userName, password);
            System.out.println ("Database connection established");
 
        Statement statement = connection.createStatement();
@@ -35,8 +41,9 @@ public class DB {
 	}
 	static public synchronized void update(String id, double bw, double av, double re){
 		try{
-	       Statement statement = connection.createStatement();
-	       statement.executeUpdate("replace into peer (id , bandwidth , availability  , reliability  ) values ('"+id+"',"+bw+","+av+","+re+")");
+	       PreparedStatement statement = connection.prepareStatement("replace into peer (id , bandwidth , availability  , reliability  ) values (?,"+bw+","+av+","+re+")");
+	       statement.setString(1, id);
+	       statement.executeUpdate();
 	       System.out.println("updated for " + id +" with " + bw +"|"+av+"|"+re);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -44,9 +51,11 @@ public class DB {
 		
 	}
 	static public synchronized double getAvg(String id){
+		
 		try{
-			Statement statement = connection.createStatement();
-		      ResultSet rs = statement.executeQuery("select * from peer where id='"+id+"'");
+			PreparedStatement statement = connection2.prepareStatement("select * from peer where id=?");
+			statement.setString(1, id);
+		      ResultSet rs = statement.executeQuery();
 		      while(rs.next())
 		      {
 		    	  double avg =  (rs.getDouble("bandwidth")+rs.getDouble("availability")+rs.getDouble("reliability"))/3;
@@ -62,6 +71,7 @@ public class DB {
 	static public synchronized void close(){
 		try {
 			connection.close();
+			connection2.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

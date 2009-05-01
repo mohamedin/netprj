@@ -58,19 +58,29 @@ public class Peer {
     private float ulrate = 0;
     private long lastUL = 0;
     private int uploaded = 0;
-    private boolean connected = false;
+    private String spId;
+    public String getSpId() {
+		return spId;
+	}
+
+	public void setSpId(String spId) {
+		this.spId = spId;
+	}
+
+	private boolean connected = false;
 
     public Peer() {
         this.hasPiece = new BitSet();
     }
 
-    public Peer(String id, String ip, int port){
+    public Peer(String id, String ip, int port, String spId){
         this.lastDL = System.currentTimeMillis();
         this.lastUL = System.currentTimeMillis();
         this.id = id;
         this.ip = ip;
         this.port = port;
         this.hasPiece = new BitSet();
+        this.spId=spId;
     }
 
     public void resetDL(){

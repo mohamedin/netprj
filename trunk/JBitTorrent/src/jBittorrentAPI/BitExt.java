@@ -186,7 +186,7 @@ public class BitExt {
                 TorrentFile t = tp.getTorrentFile(tp.parseTorrent(rename));
                 System.out.println("Torrent parsed...");
                 if (t != null) {
-                    DownloadManager dm = new DownloadManager(t, myID);
+                    DownloadManager dm = new DownloadManager(t, myID, "");
                     System.out.println("DM initiated...");
                     dm.startListening(6881, 6889);
                     System.out.println("Listening started...");
