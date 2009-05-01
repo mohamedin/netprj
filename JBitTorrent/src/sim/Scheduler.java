@@ -38,8 +38,7 @@ public class Scheduler{
 			@Override
 			public void run() {
 				new JOptionPane("Scheduler Started...\nPress the button to terminate!").createDialog(new JFrame(), "Scheduler").show();
-				for(Iterator<PeerProcessManager> itr=active.iterator(); itr.hasNext(); itr.next().disconnect());
-			    System.exit(0);
+				terminate();
 			}
 		}.start();
 	}
@@ -132,6 +131,15 @@ public class Scheduler{
 
 					if(timeWritter!=null)
 						timeWritter.close();
+					if(allWritter!=null)
+						allWritter.close();
+					if(allSeedersWritter!=null)
+						allSeedersWritter.close();
+					if(activeWritter!=null)
+						activeWritter.close();
+					if(activeSeedersWritter!=null)
+						activeSeedersWritter.close();
+
 				}
 			}
 		};
@@ -156,8 +164,12 @@ public class Scheduler{
 		statisticsCollector.stop();
 	}
 	
+	private void terminate(){
+		for(Iterator<PeerProcessManager> itr=active.iterator(); itr.hasNext(); itr.next().disconnect());
+	    System.exit(0);
+	}
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Scheduler scheduler = new Scheduler(100, 1);	// create simulation for 100 minutes, with unit time 1.
+		Scheduler scheduler = new Scheduler(1000, 1);	// create simulation for 100 minutes, with unit time 1.
 		scheduler.createPool("conf");
 		scheduler.createStatisticsCollector();
 		scheduler.start();
