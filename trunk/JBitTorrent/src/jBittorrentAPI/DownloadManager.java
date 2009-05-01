@@ -790,7 +790,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
                 String key = (String) i.next();
                 if (!this.task.containsKey(key)) {
                     Peer p = (Peer) list.get(key);
-                    System.out.println("In update " + p.getID());
+                    System.out.println("In update " + p.getSpId());
                     this.peerList.put(p.toString(), p);
                     this.connect(p);
                 }
