@@ -83,13 +83,17 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
     private long lastUnchoking = 0;
     private short optimisticUnchoke = 3;
 
+	private String spId;
+
     /**
      * Create a new manager according to the given torrent and using the client id provided
      * @param torrent TorrentFile
      * @param clientID byte[]
+     * @param spId 
      */
-    public DownloadManager(TorrentFile torrent, final byte[] clientID) {
+    public DownloadManager(TorrentFile torrent, final byte[] clientID, String spId) {
         this.clientID = clientID;
+        this.spId = spId;
         this.peerList = new LinkedHashMap<String, Peer>();
         //this.peerList = new LinkedList<Peer>();
         this.task = new TreeMap<String, DownloadTask>();
@@ -194,7 +198,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
      * Create and start the peer updater to retrieve new peers sharing the file
      */
     public void startTrackerUpdate() {
-        this.pu = new PeerUpdater(this.clientID, this.torrent);
+        this.pu = new PeerUpdater(this.clientID, this.torrent, this.spId);
         this.pu.addPeerUpdateListener(this);
         this.pu.setListeningPort(this.cl.getConnectedPort());
         this.pu.setLeft(this.left);
@@ -786,6 +790,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
                 String key = (String) i.next();
                 if (!this.task.containsKey(key)) {
                     Peer p = (Peer) list.get(key);
+                    System.out.println("In update " + p.getID());
                     this.peerList.put(p.toString(), p);
                     this.connect(p);
                 }

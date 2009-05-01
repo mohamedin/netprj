@@ -57,6 +57,7 @@ import java.net.URLConnection;
 public class PeerUpdater extends Thread {
     private LinkedHashMap<String, Peer> peerList;
     private byte[] id;
+    private String spId;
     private TorrentFile torrent;
 
 
@@ -74,9 +75,10 @@ public class PeerUpdater extends Thread {
 
     private final EventListenerList listeners = new EventListenerList();
 
-    public PeerUpdater(byte[] id, TorrentFile torrent) {
+    public PeerUpdater(byte[] id, TorrentFile torrent, String spId) {
         peerList = new LinkedHashMap();
         this.id = id;
+        this.spId = spId;
         this.torrent = torrent;
         this.left = torrent.total_length;
         this.setDaemon(true);
@@ -224,7 +226,7 @@ public class PeerUpdater extends Thread {
             this.peerList = this.processResponse(this.contactTracker(id,
                     torrent, this.downloaded,
                     this.uploaded,
-                    this.left, this.event));
+                    this.left, this.event, this.spId));
             if (peerList != null) {
                 if (first) {
                     this.event = "";
@@ -290,7 +292,12 @@ public class PeerUpdater extends Thread {
                                     get("ip"));
                             int port = ((Long) ((Map) (peerList.get(i))).get(
                                     "port")).intValue();
-                            Peer p = new Peer(peerID, ipAddress, port);
+                            String spId = new String((byte[]) ((Map) (
+                                    peerList.
+                                    get(
+                                            i))).
+                                    get("sp_id"));
+                            Peer p = new Peer(peerID, ipAddress, port, spId);
                             l.put(p.toString(), p);
                         }
                     }
@@ -326,13 +333,14 @@ public class PeerUpdater extends Thread {
      */
     public synchronized Map contactTracker(byte[] id,
                                            TorrentFile t, long dl, long ul,
-                                           long left, String event) {
+                                           long left, String event, String spId) {
         try {
+        	System.out.println("retrieved ip " +new String(id));
             URL source = new URL(t.announceURL + "?info_hash=" +
                                  t.info_hash_as_url + "&peer_id=" +
                                  Utils.byteArrayToURLString(id) + "&port="+
                                 this.listeningPort +
-                                 "&downloaded=" + dl + "&uploaded=" + ul +
+                                 "&downloaded=" + dl + "&sp_id="+spId+"&uploaded=" + ul +
                                  "&left=" +
                                  left + "&numwant=100&compact=1" + event);
             System.out.println("Contact Tracker. URL source = " + source);   //DAVID
@@ -370,7 +378,7 @@ public class PeerUpdater extends Thread {
         this.event = "&event=stopped";
         this.end = true;
         this.contactTracker(this.id, this.torrent, this.downloaded,
-                            this.uploaded, this.left, "&event=stopped");
+                            this.uploaded, this.left, "&event=stopped", this.spId);
     }
 
     /**

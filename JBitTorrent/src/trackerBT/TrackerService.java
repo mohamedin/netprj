@@ -181,7 +181,7 @@ public class TrackerService extends Service {
                                                 Constants.BYTE_ENCODING);
                     peer.put("peer_id", s);
                     peer.put("port", new Integer(e.getChild("port").getText()));
-
+                    peer.put("sp_id", e.getChild("sp_id").getText());
                     peers.add(peer);
                 }
                 ans.put("peers", peers);
@@ -238,7 +238,7 @@ public class TrackerService extends Service {
      * @param hash The file(s) that the peer is sharing
      */
     private void registerPeer(Element root, String id, String ip, String port,
-                              String hash) {
+                              String hash, String spId) {
         try {
             if (id == null || ip == null || port == null || hash == null) {
                 return;
@@ -258,6 +258,7 @@ public class TrackerService extends Service {
                 peer.getChild("id").setText(id);
                 peer.getChild("ip").setText(ip);
                 peer.getChild("port").setText(port);
+                peer.getChild("sp_id").setText(spId);
                 for (Iterator it = peer.getDescendants(new ElementFilter(
                         "torrentid")); it.hasNext(); ) {
                     if (((Element) it.next()).getText().matches(hash)) {
@@ -281,6 +282,9 @@ public class TrackerService extends Service {
                 newPeer.addContent(ipEl);
                 Element portEl = new Element("port");
                 portEl.setText(port);
+                Element sp = new Element("sp_id");
+                sp.setText(spId);
+                newPeer.addContent(sp);
                 Element hashEl = new Element("torrentid");
                 hashEl.setText(hash);
                 newPeer.addContent(portEl);
@@ -306,6 +310,7 @@ public class TrackerService extends Service {
      * @return List List of all peers sharing the file
      */
     private List peerSharing(Element root, String hash, String peerid) {
+    	System.out.println("id in tracker is :"+peerid);
         List peers = new ArrayList();
         for (Iterator hashIt = root.getDescendants(new ElementFilter(
                 "torrentid")); hashIt.hasNext(); ) {
@@ -364,6 +369,8 @@ public class TrackerService extends Service {
                 return this.MISSING_FILEID;
             }
             String peeridRaw = (String) param.get("peer_id");
+            String spId = (String) param.get("sp_id"); 
+            System.out.println(spId);
             if (peeridRaw == null) {
                 if(param.get("no_peer_id") != null)
                     peeridRaw = (String)param.get("no_peer_id");
@@ -399,7 +406,7 @@ public class TrackerService extends Service {
                 this.registerPeer(root, peerid,
                                   (String) param.get("ip"),
                                   port,
-                                  hash);
+                                  hash,spId);
                 XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
                 FileOutputStream fos = new FileOutputStream(xmlPeer);
                 xo.output(root, fos);

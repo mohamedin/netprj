@@ -41,8 +41,8 @@ public class PeerProcess implements FileCompleteListener{
 					
 					if (t != null) {
 						byte[] bid = Utils.generateID();
-						DB.update(Utils.byteArrayToByteString(bid), 4, duration, reliablity);
-						dm = new DownloadManager(t,	bid);
+						DB.update(id, 4, duration, reliablity);
+						dm = new DownloadManager(t,	bid, id);
 						dm.addFileCompleteListener(PeerProcess.this);
 						dm.startListening(6881, 6889);
 						dm.startTrackerUpdate();
