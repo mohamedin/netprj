@@ -56,6 +56,7 @@ public class DB {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("No avg for "+id );
 		return 5;
 	}
 	static public synchronized void close(){
