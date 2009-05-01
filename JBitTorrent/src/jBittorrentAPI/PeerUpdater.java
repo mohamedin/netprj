@@ -335,7 +335,7 @@ public class PeerUpdater extends Thread {
                                            TorrentFile t, long dl, long ul,
                                            long left, String event, String spId) {
         try {
-        	System.out.println("retrieved ip " +new String(id));
+        	System.out.println("retrieved id " +spId);
             URL source = new URL(t.announceURL + "?info_hash=" +
                                  t.info_hash_as_url + "&peer_id=" +
                                  Utils.byteArrayToURLString(id) + "&port="+
