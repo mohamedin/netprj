@@ -26,7 +26,7 @@ public class PeerProcessManager{
 			int uploadRate, int downloadRate){
 		this.id = id;
 		this.availability = (long) (new LogNormal(availabilityMean, availabilitySD).getSample() * Constants.MILLI_IN_MINUTE * 10);
-		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE);
+		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE * 10);
 		this.uploadRate = uploadRate;
 		this.downloadRate = downloadRate;
 		log("Rel:" + reliablity + "/Avail:" + availability);

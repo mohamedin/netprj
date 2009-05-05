@@ -14,8 +14,8 @@ public class Test {
 	
 	public static void main(String[] args) {
 		LogNormal logNormal = new LogNormal(0, 1);	// availablity
-		Exponential exponential = new Exponential(.7);	// relibality
+		Exponential exponential = new Exponential(.2);	// relibality
 		for(int i=0; i<100; i++)
-			System.out.println(millToMinute((long)(logNormal.getSample() * Constants.MILLI_IN_MINUTE * 10)) + "   " + millToMinute((long)(exponential.getSample() * Constants.MILLI_IN_MINUTE)));
+			System.out.println(millToMinute((long)(logNormal.getSample() * Constants.MILLI_IN_MINUTE * 10)) + "   " + millToMinute((long)(exponential.getSample() * Constants.MILLI_IN_MINUTE * 10)));
 	}
 }
