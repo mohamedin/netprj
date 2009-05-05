@@ -13,7 +13,7 @@ public class LogNormal implements Distribution{
 	
 	public double getSample(){
 		double x = Math.random();
-		return Math.exp(-1* Math.pow((Math.log(x)/Math.log(Math.exp(1))-mean), 2) / (2 * sd*sd) ) / (x * sd * Math.pow(2*Math.PI, .5));
+		return Math.exp(-1* Math.pow((Math.log(x)-mean), 2) / (2 * sd*sd) ) / (x * sd * Math.pow(2*Math.PI, .5));
 	}
 	
 	public static void main(String[] args) {
