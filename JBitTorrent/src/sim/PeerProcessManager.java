@@ -8,23 +8,28 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import sim.util.Exponential;
+import sim.util.LogNormal;
+
 public class PeerProcessManager{
 	private String id;
-	private int duration;
-	private int reliablity;
+	private long availability;
+	private long reliablity;
 	private int uploadRate, downloadRate;
 	
 	private boolean alive = false;
 	private Process process;
 	
 	public PeerProcessManager(String id, 
-			int duration, int reliablity, 
+			double availabilityMean, double availabilitySD,
+			double reliablityMean, 
 			int uploadRate, int downloadRate){
 		this.id = id;
-		this.duration = duration;
-		this.reliablity = reliablity;
+		this.availability = (long) (new LogNormal(availabilityMean, availabilitySD).getSample() * Constants.MILLI_IN_MINUTE * 100);
+		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE * 10);
 		this.uploadRate = uploadRate;
 		this.downloadRate = downloadRate;
+		log("Rel:" + reliablity + "/Avail:" + availability);
 	}
 	
 	protected File getPeerFolder(){
@@ -38,18 +43,16 @@ public class PeerProcessManager{
 	public void start() throws IOException{
 		new Thread(){
 			public void run() {
-				long activePeriod = reliablity * Constants.MILLI_IN_MINUTE;
-				long awayPeriod = (Constants.DAY - duration) * Constants.MILLI_IN_MINUTE;
-				
+				long awayPeriod = Constants.DAY * Constants.MILLI_IN_MINUTE - availability;
 				while(true){
 					log("Started");
 					try{
 						alive = true;
-						long lifePeriod = duration * Constants.MILLI_IN_MINUTE;
+						long lifePeriod = availability;
 						while(lifePeriod > 0){
 							log("Connected");
 							connect();
-							sleep(activePeriod);
+							sleep(reliablity);
 							log("Disconnected");
 							try {
 								disconnect();						
@@ -57,8 +60,7 @@ public class PeerProcessManager{
 								e.printStackTrace();
 							}
 							sleep(Constants.TIMEOUT);
-							lifePeriod -= activePeriod;
-//							lifePeriod -= Constants.TIMEOUT;
+							lifePeriod -= reliablity;
 						}
 						log("Died");
 					} catch (InterruptedException e) {
@@ -85,7 +87,7 @@ public class PeerProcessManager{
 				command.add("#JBitTorrent/bin;#JBitTorrent/ext/ant.jar;#JBitTorrent/ext/freemarker.jar;#JBitTorrent/ext/groovy.jar;#JBitTorrent/ext/jaxen-core.jar;#JBitTorrent/ext/jaxen-jdom.jar;#JBitTorrent/ext/jdom.jar;#JBitTorrent/ext/kxml.jar;#JBitTorrent/ext/saxpath.jar;#JBitTorrent/ext/simple-upload-0.3.4.jar;#JBitTorrent/ext/velocity.jar;#JBitTorrent/ext/xalan.jar;#JBitTorrent/ext/xerces.jar;#JBitTorrent/mysql-connector-java-3.0.11-stable-bin.jar;#JBitTorrent/ext/xml-apis.jar;#JBitTorrent/mysql-connector-java-3.0.11-stable-bin.jar".replaceAll("#", Constants.WOKING_DIR.replaceAll("\\\\", "/")));
 				command.add("sim.PeerProcess");
 				command.add(String.valueOf(id));
-				command.add(String.valueOf(duration));
+				command.add(String.valueOf(availability));
 				command.add(String.valueOf(reliablity));
 				command.add(String.valueOf(uploadRate));
 				command.add(String.valueOf(downloadRate));

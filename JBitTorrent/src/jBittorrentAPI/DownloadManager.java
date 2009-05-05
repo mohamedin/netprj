@@ -568,7 +568,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
             this.unchoken.clear();
             List<Peer> l = new LinkedList<Peer>(this.peerList.values());
             if (!this.isComplete())
-                Collections.sort(l, Constants.COMAPRE_BY_V? new VBasedComparator(): new DLRateComparator());
+                Collections.sort(l, sim.Constants.COMAPRE_BY_V? new VBasedComparator(): new DLRateComparator());
             else
                 Collections.sort(l, new ULRateComparator());
 
