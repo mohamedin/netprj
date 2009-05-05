@@ -1,39 +1,49 @@
 package sim;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import sim.util.Distribution;
+import sim.util.Exponential;
+
 public class Scheduler{
 	private static int counterGenerator = 0;
+	private Distribution interarrvialDist;
 	
 	private Vector<PeerProcessManager> pool = new Vector<PeerProcessManager>();
 	
 	private List<PeerProcessManager> active = Collections.synchronizedList(new ArrayList<PeerProcessManager>());
 	
-	private int simulationTime, collectingUnit;
+	private int simulationPoints;
+	private int collectingUnit;
 
 	private Thread statisticsCollector;
 	
-	private void createPeers(String className, int count, int duration, int reliablity, int uploadRate, int downloadRate){
+	private void createPeers(String className, int count, double availablityMean, double availablitySD, double reliablity, int uploadRate, int downloadRate){
 		for(int i=0; i<count; i++)
-			pool.add(new PeerProcessManager(className + "[" + (counterGenerator++) + "]", duration, reliablity, uploadRate, downloadRate));
+			pool.add(new PeerProcessManager(className + "[" + (counterGenerator++) + "]", availablityMean, availablitySD, reliablity, uploadRate, downloadRate));
 	}
 	
-	public Scheduler(int simulationTime, int schedulingUnit) {
+	public Scheduler(int simulationPoints, int schedulingUnit) {
+		this.simulationPoints = simulationPoints;
 		this.collectingUnit = schedulingUnit;
-		this.simulationTime = simulationTime;
+		this.interarrvialDist = new Exponential(Constants.INTER_ARRIVAL_LMDA);
 		new Thread(){
 			@Override
 			public void run() {
@@ -55,37 +65,27 @@ public class Scheduler{
 			createPeers(
 						tokens[0],						// class name
 						Integer.parseInt(tokens[1]),	// count 
-						Integer.parseInt(tokens[2]), 	// duration
-						Integer.parseInt(tokens[3]), 	// reliability
-						Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])	// transfer rates
+						Double.parseDouble(tokens[2]),Double.parseDouble(tokens[3]), 	// availablity mean and standard deviation
+						Double.parseDouble(tokens[4]), 	// reliability
+						Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6])	// transfer rates
 					);
 		}
 		log("Pool created at size:" + pool.size());
 	}
 	
+	private List<Long> timeWritter = new LinkedList<Long>();
+	private List<Integer> allWritter = new LinkedList<Integer>();
+	private List<Integer> allSeedersWritter = new LinkedList<Integer>();
+	private List<Integer> activeWritter = new LinkedList<Integer>();
+	private List<Integer> activeSeedersWritter = new LinkedList<Integer>();
+
 	private void createStatisticsCollector(){
 		statisticsCollector = new Thread(){
 			public void run() {
 				long unit = collectingUnit * Constants.MILLI_IN_MINUTE;
-				PrintWriter timeWritter = null;
-				PrintWriter allWritter = null;
-				PrintWriter allSeedersWritter = null;
-				PrintWriter activeWritter = null;
-				PrintWriter activeSeedersWritter = null;
 				try {
-					timeWritter = new PrintWriter(new File(Constants.PEERS_FOLDER + "time.txt"));
-					allWritter = new PrintWriter(new File(Constants.PEERS_FOLDER + "all.txt"));
-					allSeedersWritter = new PrintWriter(new File(Constants.PEERS_FOLDER + "all_seeders.txt"));
-					activeWritter = new PrintWriter(new File(Constants.PEERS_FOLDER + "active.txt"));
-					activeSeedersWritter = new PrintWriter(new File(Constants.PEERS_FOLDER + "active_seeders.txt"));
-					
-					timeWritter.print("Vector time =[" + new Date().getTime());
-					allWritter.print("Vector all =[1");
-					allSeedersWritter.print("Vector allSeeders =[1");
-					activeWritter.print("Vector active=[1");
-					activeSeedersWritter.print("Vector activeSeeders=[1");
-
-					while(true){
+					while(simulationPoints>0){
+						simulationPoints--;
 						try {
 							sleep(unit);
 						} catch (InterruptedException e) {
@@ -104,72 +104,100 @@ public class Scheduler{
 								activeSeeders++;
 							
 						}
-						String status = new Date() + "," + active.size() + "," + activePeers + "," + activeSeeders + "," + (activePeers-activeSeeders);
+						String status = new Date() + ",All=" + active.size() + ",Active=" + activePeers + ",ActiveSeeders=" + activeSeeders + ",ActiveLeechers" + (activePeers-activeSeeders);
 						log(status);
 
-						timeWritter.print("," + new Date().getTime());
-						allWritter.print("," + active.size());
-						allSeedersWritter.print("," + allSeeders);
-						activeWritter.print("," + activePeers);
-						activeSeedersWritter.print("," + activeSeeders);
-						
-						timeWritter.flush();
-						allWritter.flush();
-						allSeedersWritter.flush();
-						activeWritter.flush();
-						activeSeedersWritter.flush();
+						timeWritter.add(new Date().getTime());
+						allWritter.add(active.size());
+						allSeedersWritter.add(allSeeders);
+						activeWritter.add(activePeers);
+						activeSeedersWritter.add(activeSeeders);
 					}
-
-				} catch (IOException e1) {
-					e1.printStackTrace();
 				} finally{
-					timeWritter.print("]");
-					allWritter.print("]");
-					allSeedersWritter.print("]");
-					activeWritter.print("]");
-					activeSeedersWritter.print("]");
-
-					if(timeWritter!=null)
-						timeWritter.close();
-					if(allWritter!=null)
-						allWritter.close();
-					if(allSeedersWritter!=null)
-						allSeedersWritter.close();
-					if(activeWritter!=null)
-						activeWritter.close();
-					if(activeSeedersWritter!=null)
-						activeSeedersWritter.close();
-
+					terminate();
 				}
 			}
 		};
 	}
 	
 	private int getInterArrivalTime(){
-		return (int) (Constants.LMDA / Math.exp(Constants.LMDA * Math.random()) * 10);
+		return (int) ( interarrvialDist.getSample() * Constants.MILLI_IN_MINUTE * 10);
 	}
 
 	public void start() throws IOException, InterruptedException {
 		statisticsCollector.start();
-		while(simulationTime > 0){
+		while(true){
 			for(int i=0; i<Constants.ARRIVAL_GROUP_SIZE && pool.size()>0; i++){
 				PeerProcessManager selected = pool.remove((int)(Math.random() * (pool.size()-1)));
 				active.add(selected); 		// start invoking peers processes
 				selected.start();
 			}
-			long interArrival = getInterArrivalTime();
-			Thread.sleep(interArrival * Constants.MILLI_IN_MINUTE);
-			simulationTime -= interArrival;
+			Thread.sleep(getInterArrivalTime());
 		}
-		statisticsCollector.stop();
+	}
+	
+	private void alert(){
+		for(int i=0; i<20; i++){
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			Toolkit.getDefaultToolkit().beep();
+		}	
+	}
+	
+	private void dumpData(){
+		PrintWriter dataWriter = null;
+		try {
+			dataWriter = new PrintWriter(new File(Constants.PEERS_FOLDER + new SimpleDateFormat("MM-dd hh-mm-ss").format(new Date()) + ".csv"));
+			dataWriter.println("Experement " + new Date());
+			
+			dataWriter.println();
+			dataWriter.print("Time");
+			for(Iterator<Long> itr=timeWritter.iterator(); itr.hasNext(); dataWriter.print("," + itr.next()));
+			
+			dataWriter.println();
+			dataWriter.print("Steps");
+			Long start = timeWritter.get(0);
+			for(Iterator<Long> itr=timeWritter.iterator(); itr.hasNext(); dataWriter.print("," + (itr.next()-start)));
+			
+			dataWriter.println();
+			dataWriter.print("All");
+			for(Iterator<Integer> itr=allWritter.iterator(); itr.hasNext(); dataWriter.print("," + itr.next()));
+			
+			dataWriter.println();
+			dataWriter.print("All Seeders");
+			for(Iterator<Integer> itr=allSeedersWritter.iterator(); itr.hasNext(); dataWriter.print("," + itr.next()));
+
+			dataWriter.println();
+			dataWriter.print("Active Peers");
+			for(Iterator<Integer> itr=activeWritter.iterator(); itr.hasNext(); dataWriter.print("," + itr.next()));
+
+			dataWriter.println();
+			dataWriter.print("Active Seeders");
+			for(Iterator<Integer> itr=activeSeedersWritter.iterator(); itr.hasNext(); dataWriter.print("," + itr.next()));
+			
+			dataWriter.println();
+			dataWriter.print("Active Leechers");
+			for(Iterator<Integer> itr=activeSeedersWritter.iterator(), itrAll=activeWritter.iterator(); itr.hasNext(); dataWriter.print("," + (itrAll.next() - itr.next())));
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} finally{
+			if(dataWriter!=null)
+				dataWriter.close();
+		}
 	}
 	
 	private void terminate(){
 		for(Iterator<PeerProcessManager> itr=active.iterator(); itr.hasNext(); itr.next().disconnect());
+		dumpData();
+		alert();
 	    System.exit(0);
 	}
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Scheduler scheduler = new Scheduler(1000, 1);	// create simulation for 100 minutes, with unit time 1.
+		Scheduler scheduler = new Scheduler(10, 1);	// create simulation for 100 minutes, with unit time 1.
 		scheduler.createPool("conf");
 		scheduler.createStatisticsCollector();
 		scheduler.start();
