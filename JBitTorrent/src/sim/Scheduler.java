@@ -31,7 +31,6 @@ public class Scheduler{
 	private List<PeerProcessManager> active = Collections.synchronizedList(new ArrayList<PeerProcessManager>());
 	
 	private int simulationPoints;
-	private int collectingUnit;
 
 	private Thread statisticsCollector;
 	
@@ -40,9 +39,8 @@ public class Scheduler{
 			pool.add(new PeerProcessManager(className + "[" + (counterGenerator++) + "]", availablityMean, availablitySD, reliablity, uploadRate, downloadRate));
 	}
 	
-	public Scheduler(int simulationPoints, int schedulingUnit) {
+	public Scheduler(int simulationPoints) {
 		this.simulationPoints = simulationPoints;
-		this.collectingUnit = schedulingUnit;
 		this.interarrvialDist = new Exponential(Constants.INTER_ARRIVAL_LMDA);
 		new Thread(){
 			@Override
@@ -82,12 +80,11 @@ public class Scheduler{
 	private void createStatisticsCollector(){
 		statisticsCollector = new Thread(){
 			public void run() {
-				long unit = collectingUnit * Constants.MILLI_IN_MINUTE;
 				try {
 					while(simulationPoints>0){
 						simulationPoints--;
 						try {
-							sleep(unit);
+							sleep(Constants.COLLECTING_TIME);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -121,7 +118,7 @@ public class Scheduler{
 	}
 	
 	private int getInterArrivalTime(){
-		return (int) ( interarrvialDist.getSample() * Constants.MILLI_IN_MINUTE * 10);
+		return (int) (interarrvialDist.getSample() * Constants.MILLI_IN_MINUTE);
 	}
 
 	public void start() throws IOException, InterruptedException {
@@ -197,7 +194,7 @@ public class Scheduler{
 	    System.exit(0);
 	}
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Scheduler scheduler = new Scheduler(10, 1);	// create simulation for 100 minutes, with unit time 1.
+		Scheduler scheduler = new Scheduler(Constants.SIMULATION_POINTS);
 		scheduler.createPool("conf");
 		scheduler.createStatisticsCollector();
 		scheduler.start();

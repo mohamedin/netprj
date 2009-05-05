@@ -3,8 +3,11 @@ package sim;
 public interface Constants {
 	// Time constants
 	public static final int DAY = 24;
-	public static final long MILLI_IN_MINUTE = 100 * 60;
-	public static final long TIMEOUT = Constants.MILLI_IN_MINUTE / 2;	// 1 minute to cause connection timeout
+	public static final long MILLI_IN_MINUTE = 1000 * 60;
+	public static final long TIMEOUT = Constants.MILLI_IN_MINUTE / 20;	// .05 minute to cause connection timeout
+	// Simulation parameters
+	public static final long COLLECTING_TIME = Constants.MILLI_IN_MINUTE / 10;	// collecting data every .1 second
+	public static final int SIMULATION_POINTS = 120;
 	// Environment constants
 	public static final String WOKING_DIR = "E:\\Mohamed.Workspace\\";
 	public static final String PEERS_FOLDER = WOKING_DIR + "JBitTorrent\\example\\";
