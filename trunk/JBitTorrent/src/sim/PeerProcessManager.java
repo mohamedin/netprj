@@ -25,8 +25,8 @@ public class PeerProcessManager{
 			double reliablityMean, 
 			int uploadRate, int downloadRate){
 		this.id = id;
-		this.availability = (long) (new LogNormal(availabilityMean, availabilitySD).getSample() * Constants.MILLI_IN_MINUTE * 100);
-		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE * 10);
+		this.availability = (long) (new LogNormal(availabilityMean, availabilitySD).getSample() * Constants.MILLI_IN_MINUTE * 10);
+		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE);
 		this.uploadRate = uploadRate;
 		this.downloadRate = downloadRate;
 		log("Rel:" + reliablity + "/Avail:" + availability);
@@ -68,11 +68,12 @@ public class PeerProcessManager{
 					} finally{
 						alive = false;
 					}
-					try {
-						sleep(awayPeriod);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					if(awayPeriod>0)
+						try {
+							sleep(awayPeriod);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 				}
 			}
 		}.start();
