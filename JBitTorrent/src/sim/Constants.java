@@ -9,7 +9,7 @@ public interface Constants {
 	public static final long COLLECTING_TIME = Constants.MILLI_IN_MINUTE / 10;	// collecting data every .1 second
 	public static final int SIMULATION_POINTS = 120;
 	// Environment constants
-	public static final String WOKING_DIR = "E:\\Mohamed.Workspace\\";
+	public static final String WOKING_DIR = "C:\\Users\\admin\\Desktop\\Mine\\Work\\Mohamedin.Workspace\\";
 	public static final String PEERS_FOLDER = WOKING_DIR + "JBitTorrent\\example\\";
 	public static final String TORRENT_FILE = PEERS_FOLDER + "seeder\\SkypeSetup.exe.torrents";
 	public static final String DATA_FILE = "SkypeSetup.exe";
@@ -20,5 +20,5 @@ public interface Constants {
 	public static final int ARRIVAL_GROUP_SIZE = 2;
 	public static final float INTER_ARRIVAL_LMDA = 0.7f;
 	// Peer comparison method
-	public static boolean COMAPRE_BY_V = false;	
+	public static boolean COMAPRE_BY_V = true;	
 }
