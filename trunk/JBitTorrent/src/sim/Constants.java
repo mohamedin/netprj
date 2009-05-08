@@ -10,7 +10,7 @@ public interface Constants {
 	public static final int SIMULATION_POINTS = 120;
 	// Environment constants
 	public static final String WOKING_DIR = "C:\\Users\\admin\\Desktop\\Mine\\Work\\Mohamedin.Workspace\\";
-	public static final String PEERS_FOLDER = WOKING_DIR + "JBitTorrent\\example\\";
+	public static final String PEERS_FOLDER = WOKING_DIR + "JBitTorrent\\exp\\";
 	public static final String TORRENT_FILE = PEERS_FOLDER + "seeder\\SkypeSetup.exe.torrents";
 	public static final String DATA_FILE = "SkypeSetup.exe";
 	// Network constants
