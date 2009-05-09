@@ -114,7 +114,8 @@ public class PeerProcessManager{
 	
 	public void disconnect(){
 		try {
-			process.destroy();			
+			if(process!= null)
+				process.destroy();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

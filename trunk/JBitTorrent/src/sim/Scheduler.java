@@ -109,6 +109,8 @@ public class Scheduler{
 						allSeedersWritter.add(allSeeders);
 						activeWritter.add(activePeers);
 						activeSeedersWritter.add(activeSeeders);
+						
+						dumpData();
 					}
 				} finally{
 					terminate();
