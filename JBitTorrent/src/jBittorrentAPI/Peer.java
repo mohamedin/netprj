@@ -59,7 +59,7 @@ public class Peer {
     private long lastUL = 0;
     private int uploaded = 0;
     private String spId;
-    public int sortVal =0;
+    public double sortVal =0;
     public String getSpId() {
 		return spId;
 	}

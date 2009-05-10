@@ -569,79 +569,97 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
             this.unchoken.clear();
             List<Peer> l;
             List<Peer> bandwidthBased = new LinkedList<Peer>(this.peerList.values());
-            if (!this.isComplete())
+            if (!this.isComplete()){
                 Collections.sort(bandwidthBased, new DLRateComparator());
-            else
-                Collections.sort(bandwidthBased, new ULRateComparator());
+                if (sim.Constants.COMAPRE_BY_V){
+                	int i=bandwidthBased.size();
+                	for (Iterator<Peer> it = bandwidthBased.iterator(); it.hasNext(); ) {
+                		Peer p = it.next();
+                        p.sortVal=i*sim.Constants.BW_WEIGHT;
+                        i--;
+                    }
+                	List<Peer> avBased = new LinkedList<Peer>(this.peerList.values());
+                	Collections.sort(avBased,new Comparator<Peer>(){
 
-            if (sim.Constants.COMAPRE_BY_V){
-            	int i=bandwidthBased.size();
-            	for (Iterator<Peer> it = bandwidthBased.iterator(); it.hasNext(); ) {
-            		Peer p = it.next();
-                    p.sortVal=i;
-                    i--;
+    					public int compare(Peer o1, Peer o2) {
+    						double v1= DB.getAV(o1.getSpId());
+    						double v2= DB.getAV(o2.getSpId());
+    						if (v1 > v2)
+    			                return -1;
+    			            else if (v1 < v2)
+    			                return 1;
+    						return 0;						
+    					}
+                		
+                	} );
+                	i=avBased.size();
+                	for (Iterator<Peer> it = avBased.iterator(); it.hasNext(); ) {
+                		Peer p = it.next();
+                        p.sortVal+=i*sim.Constants.AV_WEIGHT;
+                        i--;
+                    }
+                	
+                	
+                	List<Peer> reBased = new LinkedList<Peer>(this.peerList.values());
+                	Collections.sort(reBased,new Comparator<Peer>(){
+
+    					public int compare(Peer o1, Peer o2) {
+    						double v1= DB.getRE(o1.getSpId());
+    						double v2= DB.getRE(o2.getSpId());
+    						if (v1 > v2)
+    			                return -1;
+    			            else if (v1 < v2)
+    			                return 1;
+    						return 0;						
+    					}
+                		
+                	} );
+                   	i=reBased.size();
+                	for (Iterator<Peer> it = reBased.iterator(); it.hasNext(); ) {
+                		Peer p = it.next();
+                        p.sortVal+=i*sim.Constants.RE_WEIGHT;
+                        i--;
+                    }
+                	
+                	
+                	l = new LinkedList<Peer>(this.peerList.values());
+                	Collections.sort(l,new Comparator<Peer>(){
+
+    					public int compare(Peer o1, Peer o2) {
+    						double v1= o1.sortVal;
+    						double v2= o2.sortVal;
+    						if (v1 > v2)
+    			                return -1;
+    			            else if (v1 < v2)
+    			                return 1;
+    						return 0;						
+    					}
+                		
+                	} );
+                	
+                	
                 }
-            	List<Peer> avBased = new LinkedList<Peer>(this.peerList.values());
-            	Collections.sort(avBased,new Comparator<Peer>(){
-
-					public int compare(Peer o1, Peer o2) {
-						double v1= DB.getAV(o1.getSpId());
-						double v2= DB.getAV(o2.getSpId());
-						if (v1 > v2)
-			                return -1;
-			            else if (v1 < v2)
-			                return 1;
-						return 0;						
+                else
+                	l=bandwidthBased;
+                
+                try {
+					FileWriter fw = new FileWriter(new File("example/"+this.spId+"/peerSort.txt"),true);
+					PrintWriter pr = new PrintWriter(fw);
+					pr.println("===================================================");
+					for (Iterator<Peer> it = l.iterator(); it.hasNext(); ) {
+						pr.println(it.next().getSpId());
 					}
-            		
-            	} );
-            	i=avBased.size();
-            	for (Iterator<Peer> it = avBased.iterator(); it.hasNext(); ) {
-            		Peer p = it.next();
-                    p.sortVal+=i;
-                    i--;
-                }
-            	
-            	
-            	List<Peer> reBased = new LinkedList<Peer>(this.peerList.values());
-            	Collections.sort(reBased,new Comparator<Peer>(){
-
-					public int compare(Peer o1, Peer o2) {
-						double v1= DB.getRE(o1.getSpId());
-						double v2= DB.getRE(o2.getSpId());
-						if (v1 > v2)
-			                return -1;
-			            else if (v1 < v2)
-			                return 1;
-						return 0;						
-					}
-            		
-            	} );
-               	i=reBased.size();
-            	for (Iterator<Peer> it = reBased.iterator(); it.hasNext(); ) {
-            		Peer p = it.next();
-                    p.sortVal+=i;
-                    i--;
-                }
-            	
-            	
-            	l = new LinkedList<Peer>(this.peerList.values());
-            	Collections.sort(l,new Comparator<Peer>(){
-
-					public int compare(Peer o1, Peer o2) {
-						int v1= o1.sortVal;
-						int v2= o2.sortVal;
-						if (v1 > v2)
-			                return -1;
-			            else if (v1 < v2)
-			                return 1;
-						return 0;						
-					}
-            		
-            	} );
+					pr.close();
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
             }
-            else
-            	l=bandwidthBased;
+            else{
+                Collections.sort(bandwidthBased, new ULRateComparator());
+                l=bandwidthBased;
+            }
+
             
             for (Iterator it = l.iterator(); it.hasNext(); ) {
                 Peer p = (Peer) it.next();
