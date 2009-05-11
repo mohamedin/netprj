@@ -125,6 +125,7 @@ public class DownloadTask extends Thread implements IncomingListener,
                 this.peer = new Peer();
                 this.peer.setIP(peerIP);
                 this.peer.setPort(peerPort);
+                this.peer.setSpId(peer.getSpId());
             } catch (IOException ioe) {
             }
         } else
