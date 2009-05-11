@@ -11,6 +11,8 @@ public class DB {
     static Connection connection = null;
     static Connection connection2 = null;
     static Connection connection3 = null;
+    static Connection connection4 = null;
+    static Connection connection5 = null;
 	static {
     // load the sqlite-JDBC driver using the current class loader
     
@@ -24,12 +26,15 @@ public class DB {
            connection = DriverManager.getConnection (url, userName, password);
            connection2 = DriverManager.getConnection (url, userName, password);
            connection3 = DriverManager.getConnection (url, userName, password);
+           connection4 = DriverManager.getConnection (url, userName, password);
+           connection5 = DriverManager.getConnection (url, userName, password);
            System.out.println ("Database connection established");
 
        Statement statement = connection.createStatement();
        statement.setQueryTimeout(30);  // set timeout to 30 sec.
       
        statement.executeUpdate("create table if not exists peer (id varchar(255) primary key, bandwidth double, availability  double, reliability  double)");
+       statement.executeUpdate("create table if not exists peerIdMap (id varchar(255) primary key, ourID varchar(255))");
        System.out.println("started DB");
     }
     catch(Exception e)
@@ -37,6 +42,34 @@ public class DB {
       
       e.printStackTrace();
     }
+	}
+	
+	static public synchronized void updateMap(String id, String ourId){
+		try{
+	       PreparedStatement statement = connection4.prepareStatement("replace into peerIdMap (id , ourID ) values (?,?)");
+	       statement.setString(1, id);
+	       statement.setString(2, ourId);
+	       statement.executeUpdate();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	static public synchronized String getMappedID(String id){
+		
+		try{
+			PreparedStatement statement = connection5.prepareStatement("select ourID from peerIdMap where id=?");
+			statement.setString(1, id);
+		      ResultSet rs = statement.executeQuery();
+		      while(rs.next())
+		      {
+
+		    	  return rs.getString("ourID");
+		      }
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "Unknown!!";
 	}
 	static public synchronized void update(String id, double bw, double av, double re){
 		try{

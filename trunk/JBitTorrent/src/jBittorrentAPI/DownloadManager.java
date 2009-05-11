@@ -84,7 +84,8 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
     private long lastUnchoking = 0;
     private short optimisticUnchoke = 3;
 
-	private String spId;
+	//private String spId;
+    private String ourId;
 
     /**
      * Create a new manager according to the given torrent and using the client id provided
@@ -92,9 +93,9 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
      * @param clientID byte[]
      * @param spId 
      */
-    public DownloadManager(TorrentFile torrent, final byte[] clientID, String spId) {
+    public DownloadManager(TorrentFile torrent, final byte[] clientID, String ourId) {
         this.clientID = clientID;
-        this.spId = spId;
+        this.ourId = ourId;
         this.peerList = new LinkedHashMap<String, Peer>();
         //this.peerList = new LinkedList<Peer>();
         this.task = new TreeMap<String, DownloadTask>();
@@ -199,7 +200,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
      * Create and start the peer updater to retrieve new peers sharing the file
      */
     public void startTrackerUpdate() {
-        this.pu = new PeerUpdater(this.clientID, this.torrent, this.spId);
+        this.pu = new PeerUpdater(this.clientID, this.torrent);
         this.pu.addPeerUpdateListener(this);
         this.pu.setListeningPort(this.cl.getConnectedPort());
         this.pu.setLeft(this.left);
@@ -232,7 +233,12 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
             return false;
         }
     }
-
+    public int getPort(){
+    	return this.cl.getConnectedPort();
+    }
+    public String getIP(){
+    	return this.cl.getIP();
+    }
     /**
      * Close all open files
      */
@@ -643,11 +649,13 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
                 	l=bandwidthBased;
                 
                 try {
-					FileWriter fw = new FileWriter(new File("example/"+this.spId+"/peerSort.txt"),true);
+					FileWriter fw = new FileWriter(new File("example/"+this.ourId+"/peerSort.txt"),true);
 					PrintWriter pr = new PrintWriter(fw);
 					pr.println("===================================================");
+					pr.println(this.getIP()+":"+this.getPort());
 					for (Iterator<Peer> it = l.iterator(); it.hasNext(); ) {
-						pr.println(it.next().getSpId());
+						String pid = it.next().getSpId();
+						pr.println(pid+"==>"+DB.getMappedID(pid));
 					}
 					pr.close();
 					fw.close();
@@ -852,7 +860,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
         DownloadTask dt = new DownloadTask(p,
                                            this.torrent.info_hash_as_binary,
                                            this.clientID, true,
-                                           this.getBitField());
+                                           this.getBitField(),"",this.ourId);
         dt.addDTListener(this);
         dt.start();
     }
@@ -879,7 +887,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
                 String key = (String) i.next();
                 if (!this.task.containsKey(key)) {
                     Peer p = (Peer) list.get(key);
-                    System.out.println("In update " + p.getSpId());
+                    System.out.println("In update " + p.getPort());
                     this.peerList.put(p.toString(), p);
                     this.connect(p);
                 }
@@ -924,6 +932,7 @@ public class DownloadManager implements DTListener, PeerUpdateListener,
                 DownloadTask dt = new DownloadTask(null,
                         this.torrent.info_hash_as_binary,
                         this.clientID, false, this.getBitField(), s);
+                System.out.println("port of accepted con="+id);
                 dt.addDTListener(this);
                 this.peerList.put(dt.getPeer().toString(), dt.getPeer());
                 this.task.put(dt.getPeer().toString(), dt);

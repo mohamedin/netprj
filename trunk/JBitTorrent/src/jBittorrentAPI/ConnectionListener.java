@@ -40,6 +40,8 @@ package jBittorrentAPI;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+
 import javax.swing.event.EventListenerList;
 
 /**
@@ -123,6 +125,10 @@ public class ConnectionListener extends Thread {
         return false;
     }
 
+    public String getIP(){
+    	//TODO: return current IP (not fixed) in case of tested on multiple PCs
+		return "127.0.0.1";
+    }
     /**
      * Try to create a server socket for remote peers to connect on within current
      * port range
