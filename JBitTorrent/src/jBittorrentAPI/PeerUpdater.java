@@ -57,7 +57,7 @@ import java.net.URLConnection;
 public class PeerUpdater extends Thread {
     private LinkedHashMap<String, Peer> peerList;
     private byte[] id;
-    private String spId;
+    //private String spId;
     private TorrentFile torrent;
 
 
@@ -75,10 +75,10 @@ public class PeerUpdater extends Thread {
 
     private final EventListenerList listeners = new EventListenerList();
 
-    public PeerUpdater(byte[] id, TorrentFile torrent, String spId) {
+    public PeerUpdater(byte[] id, TorrentFile torrent) {
         peerList = new LinkedHashMap();
         this.id = id;
-        this.spId = spId;
+      //  this.spId = spId;
         this.torrent = torrent;
         this.left = torrent.total_length;
         this.setDaemon(true);
@@ -226,7 +226,7 @@ public class PeerUpdater extends Thread {
             this.peerList = this.processResponse(this.contactTracker(id,
                     torrent, this.downloaded,
                     this.uploaded,
-                    this.left, this.event, this.spId));
+                    this.left, this.event, "notUsedNow"));
             if (peerList != null) {
                 if (first) {
                     this.event = "";
@@ -311,6 +311,8 @@ public class PeerUpdater extends Thread {
                                    Utils.byteToUnsignedInt(p[i + 3]));
                         peer.setPort(Utils.byteArrayToInt(Utils.subArray(p,
                                 i + 4, 2)));
+                        peer.setSpId(peer.getIP()+":"+peer.getPort());
+                        System.out.println("^^^^^^^^^^^^^^^^^^^Port"+peer.getPort());
                         l.put(peer.toString(), peer);
                     }
                 }
@@ -378,7 +380,7 @@ public class PeerUpdater extends Thread {
         this.event = "&event=stopped";
         this.end = true;
         this.contactTracker(this.id, this.torrent, this.downloaded,
-                            this.uploaded, this.left, "&event=stopped", this.spId);
+                            this.uploaded, this.left, "&event=stopped", "NotUsedNow");
     }
 
     /**

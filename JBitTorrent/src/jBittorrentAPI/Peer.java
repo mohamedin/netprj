@@ -81,7 +81,7 @@ public class Peer {
         this.ip = ip;
         this.port = port;
         this.hasPiece = new BitSet();
-        this.spId=spId;
+        this.spId=ip+":"+port;
     }
 
     public void resetDL(){

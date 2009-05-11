@@ -41,10 +41,12 @@ public class PeerProcess implements FileCompleteListener{
 					
 					if (t != null) {
 						byte[] bid = Utils.generateID();
-						DB.update(id, 4, duration, reliablity);
+						
 						dm = new DownloadManager(t,	bid, id);
 						dm.addFileCompleteListener(PeerProcess.this);
 						dm.startListening(6881, 6889);
+						DB.update(dm.getIP()+":"+dm.getPort(), 4, duration, reliablity);
+						DB.updateMap(dm.getIP()+":"+dm.getPort(), id);
 						dm.startTrackerUpdate();
 						dm.blockUntilCompletion();
 						dm.stopTrackerUpdate();
