@@ -42,8 +42,6 @@ import java.util.*;
 import java.net.*;
 import javax.swing.event.EventListenerList;
 
-import sim.DB;
-
 /**
  * Class representing a task that downloads pieces from a remote peer
  *
@@ -95,7 +93,6 @@ public class DownloadTask extends Thread implements IncomingListener,
     private long creationTime = 0;
     private long updateTime = 0;
     private long lmrt = 0;
-    private String ourId;
 
     private LinkedList<Integer> pendingRequest;
 
@@ -128,8 +125,8 @@ public class DownloadTask extends Thread implements IncomingListener,
                 this.peer = new Peer();
                 this.peer.setIP(peerIP);
                 this.peer.setPort(peerPort);
-                this.peer.setSpId(peerIP+":"+peerPort);
-                System.out.println("$$$$$$$$$$$$$$unknow peer " + this.peer.getSpId());
+                if(peer!=null)
+                	this.peer.setSpId(peer.getSpId());
             } catch (IOException ioe) {
             }
         } else
@@ -148,11 +145,7 @@ public class DownloadTask extends Thread implements IncomingListener,
     public DownloadTask(Peer peer, byte[] fileID, byte[] myID, boolean init, byte[] bitfield) {
         this(peer, fileID, myID, init, bitfield, null);
     }
-    
-    public DownloadTask(Peer peer, byte[] fileID, byte[] myID, boolean init, byte[] bitfield, String dummy,String ourId) {
-        this(peer, fileID, myID, init, bitfield, null);
-    	this.ourId=ourId;
-    }
+
     /**
      * Start the downloading process from the remote peer in parameter
      * @param peer The peer to connect to
@@ -173,16 +166,10 @@ public class DownloadTask extends Thread implements IncomingListener,
      */
     public void initConnection() throws UnknownHostException, IOException {
         if (this.peerConnection == null && !this.peer.isConnected()) {
-        	System.out.println("Check port==> "+this.peer.getPort());
             this.peerConnection = new Socket(this.peer.getIP(),
                                              this.peer.getPort());
             this.os = this.peerConnection.getOutputStream();
             this.is = this.peerConnection.getInputStream();
-            //TODO: HERE
-            
-            System.out.println("********************Found "+this.peerConnection.getLocalPort());
-            DB.update("127.0.0.1:"+this.peerConnection.getLocalPort(),Constants.DOWNRATE , Constants.AV, Constants.RE);
-            DB.updateMap(this.ourId, "127.0.0.1:"+this.peerConnection.getLocalPort());
             this.peer.setConnected(true);
         }
 

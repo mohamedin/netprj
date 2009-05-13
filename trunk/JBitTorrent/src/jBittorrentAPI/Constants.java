@@ -67,8 +67,8 @@ public class
     public static int DOWNRATE = 4;
     public static int UPRATE = 4;    
     
-    public static double AV = 10;
-    public static double RE = 10;
+//    public static double AV = 10;
+//    public static double RE = 10;
     
     public static final String OSName = System.getProperty("os.name");
 

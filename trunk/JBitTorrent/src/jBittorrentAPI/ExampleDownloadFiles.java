@@ -37,7 +37,6 @@
 
 package jBittorrentAPI;
 
-import sim.DB;
 
 /**
  * Simple example to show how it is possible to download files using bittorrent
@@ -61,7 +60,7 @@ class ExampleDownloadFiles {
             if(args.length > 1)
                 Constants.SAVEPATH = args[1];
             if (t != null) {
-                DownloadManager dm = new DownloadManager(t, Utils.generateID(), "Seeder");
+                DownloadManager dm = new DownloadManager(t, Utils.generateID(-1, -1), "Seeder");
                 dm.startListening(6881, 6889);
                 dm.startTrackerUpdate();
                 dm.blockUntilCompletion();
