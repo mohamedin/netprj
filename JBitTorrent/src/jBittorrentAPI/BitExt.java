@@ -51,7 +51,7 @@ public class BitExt {
     public static void main(String[] args) {
 
         // Client id:
-        byte[] myID = Utils.generateID();
+        byte[] myID = Utils.generateID(-1, -1);
         System.out.println("--------------------------------");
         System.out.println("| Extending BitTorrent Project |");
         System.out.println("--------------------------------\r\n");

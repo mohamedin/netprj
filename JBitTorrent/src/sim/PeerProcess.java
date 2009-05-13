@@ -15,7 +15,7 @@ public class PeerProcess implements FileCompleteListener{
 	private DownloadManager dm;
 	
 	public PeerProcess(String id, 
-			int duration, int reliablity, 
+			long duration, long reliablity, 
 			int uploadRate, int downloadRate){
 		this.id = id;
 		getPeerFolder().mkdirs();
@@ -36,17 +36,13 @@ public class PeerProcess implements FileCompleteListener{
 					jBittorrentAPI.Constants.SAVEPATH = getPeerFolder().getAbsolutePath() + File.separator;
 					jBittorrentAPI.Constants.DOWNRATE = downloadRate;
 					jBittorrentAPI.Constants.UPRATE = uploadRate;
-					jBittorrentAPI.Constants.AV = duration;
-					jBittorrentAPI.Constants.RE = reliablity;
 					
 					if (t != null) {
-						byte[] bid = Utils.generateID();
-						
+						byte[] bid = Utils.generateID(duration, reliablity);
+//						DB.update(id, 4, duration, reliablity);
 						dm = new DownloadManager(t,	bid, id);
 						dm.addFileCompleteListener(PeerProcess.this);
 						dm.startListening(6881, 6889);
-						DB.update(dm.getIP()+":"+dm.getPort(), 4, duration, reliablity);
-						DB.updateMap(dm.getIP()+":"+dm.getPort(), id);
 						dm.startTrackerUpdate();
 						dm.blockUntilCompletion();
 						dm.stopTrackerUpdate();
@@ -104,13 +100,13 @@ public class PeerProcess implements FileCompleteListener{
 	}
 	
 	public static void main(String[] args) throws NumberFormatException, InterruptedException {
-		DB.update("dummy", 0, 0, 0);
+//		DB.update("dummy", 0, 0, 0);
 		if(args==null || args.length<5)
 			System.out.println("Invalid usage...");
 		else
 			new PeerProcess(args[0], 
-						Integer.parseInt(args[1]), 
-						Integer.parseInt(args[2]), 
+						Long.parseLong(args[1]), 
+						Long.parseLong(args[2]), 
 						Integer.parseInt(args[3]), Integer.parseInt(args[4]));
 	}
 }

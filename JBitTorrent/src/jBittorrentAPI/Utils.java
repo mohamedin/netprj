@@ -44,6 +44,8 @@ import java.lang.*;
 import java.io.*;
 import java.nio.*;
 
+import sim.Constants;
+
 /**
  * A set of utility methods used by the program
  *
@@ -254,12 +256,21 @@ public class Utils {
      * Generate the client id, which is a fixed string of length 8 concatenated with 12 random bytes
      * @return byte[]
      */
-    public static byte[] generateID() {
-        byte[] id = new byte[12];
+    public static byte[] generateID(long availRank, long relRank) {
+    	if(availRank>0)
+    		availRank /= Constants.MILLI_IN_MINUTE;
+    	if(availRank<0 || availRank>9)
+    		availRank = 9;
+    	if(relRank>0)
+    		relRank /= Constants.MILLI_IN_MINUTE;
+    	if(relRank<0 || relRank>9)
+    		relRank = 9;
+    		
+    	byte[] id = new byte[10];
 
         Random r = new Random(System.currentTimeMillis());
         r.nextBytes(id);
-        return Utils.concat("-BE0001-".getBytes(),id);
+        return Utils.concat(Utils.concat("-BE0001-".getBytes(),id), new byte[] { (byte)availRank, (byte)relRank });
     }
 
     /**

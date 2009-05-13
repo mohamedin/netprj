@@ -46,7 +46,7 @@ public class Seeder {
 	}
 	
 	public static void main(String[] args) {
-		DB.update("dummy", 0, 0, 0);
+//		DB.update("dummy", 0, 0, 0);
 		new Seeder("Seeder", Constants.SERVER);
 	}
 }

@@ -13,8 +13,8 @@ public class Test {
 	}
 	
 	public static void main(String[] args) {
-		LogNormal logNormal = new LogNormal(0, 1);	// availablity
-		Exponential exponential = new Exponential(.2);	// relibality
+		LogNormal logNormal = new LogNormal(1.5, 1);	// availablity
+		Exponential exponential = new Exponential(.05);	// relibality
 		for(int i=0; i<100; i++)
 			System.out.println(millToMinute((long)(logNormal.getSample() * Constants.MILLI_IN_MINUTE * 10)) + "   " + millToMinute((long)(exponential.getSample() * Constants.MILLI_IN_MINUTE * 10)));
 	}

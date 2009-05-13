@@ -25,8 +25,10 @@ public class PeerProcessManager{
 			double reliablityMean, 
 			int uploadRate, int downloadRate){
 		this.id = id;
-		this.availability = (long) (new LogNormal(availabilityMean, availabilitySD).getSample() * Constants.MILLI_IN_MINUTE * 10);
-		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE * 10);
+		this.availability = (long) (new LogNormal(availabilityMean, availabilitySD).getSample() * Constants.MILLI_IN_MINUTE * 10) * Constants.ALWAYS_AVAIL;
+		this.reliablity = (long) (new Exponential(reliablityMean).getSample() * Constants.MILLI_IN_MINUTE * 10) * Constants.ALWAYS_RELI;
+		if(reliablity > availability)
+			reliablity = availability;
 		this.uploadRate = uploadRate;
 		this.downloadRate = downloadRate;
 		log("Rel:" + reliablity + "/Avail:" + availability);
@@ -82,6 +84,8 @@ public class PeerProcessManager{
 	private void connect(){
 		new Thread(){
 			public void run() {
+				
+//				new PeerProcess(id, availability, reliablity, uploadRate, downloadRate);
 				List<String> command = new ArrayList<String>();
 				command.add("java");
 				command.add("-classpath");
