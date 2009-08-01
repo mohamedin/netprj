@@ -26,7 +26,8 @@ SCRIPTS
 	* Wired Topology Grid
 	* Wireless Topology Infrastructure
 	* Wired Topology Star
-	* Wireless Topology Grid Heterogeneous
+	* Wireless Topology Grid Heterogeneous [COMMING SOON]
+	* Wireless Topology Grid Mobile	[COMMING SOON]
 __________________________________________________________________________________________________________________________________________________
 
 Wireless Topology Grid
