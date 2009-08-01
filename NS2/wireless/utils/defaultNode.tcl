@@ -1,0 +1,13 @@
+$ns node-config -adhocRouting $adhocRouting \
+                 -llType $ll \
+                 -macType $mac \
+                 -ifqType $ifq \
+                 -ifqLen $ifqlen \
+                 -antType $ant \
+                 -propType $prop \
+                 -phyType $netif \
+                 -channelType $chan \
+				 -topoInstance $topo \
+				 -agentTrace ON \
+                 -routerTrace OFF \
+                 -macTrace OFF 
