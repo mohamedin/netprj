@@ -110,3 +110,25 @@ argument-3) data rate is 4 * 100 = 400 Kbps as I assume given parameter is uploa
 argument-4) distance between each node is 40 meter [OPTIONAL default 40]
 argument-5) maximum inter-arrival time between node [OPTIONAL default 10]
 
+
+__________________________________________________________________________________________________________________________________________________
+
+Wireless Topology Grid Mobile
+-----------------------------
+
+From NS2 directory type the following command
+ ./../ns-allinone-2.29/ns-2.29/indep-utils/cmu-scen-gen/setdest/setdest.exe  -n 12 -p 2.0 -s 1 -M 10 -t 200 -x 500 -y 500 > wireless/mobile/scen.tcl 
+ 
+This command generate a new movement pattern file name "scen" with the following options
+	12 movable nodes indicated by  	-n 12
+ 	10 meter maximum speed  		-M 10
+ 	200 seconds of movement then they stop	-t 200
+ 	
+So all you have to bother your self with is Number of nodes, and movement time set it to suitable time for your experiment.
+Note: u can backup this file as next simulation will override it
+
+No run the experiment using the following command
+
+wireless/mobile.tcl <grid dimension> <seeder index> <upload data rate> <distance between nodes> <inter-arrival range>
+
+The parameters are the same as Wireless Grid but here nodes are mobile according to "scen" file, you provided
