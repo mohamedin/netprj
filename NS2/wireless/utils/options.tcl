@@ -8,7 +8,7 @@ set ifq        CMUPriQueue
 set ll         LL
 set ant        Antenna/OmniAntenna
 # X dimension of the topography
-set x              670
+set x              1000
 #Y dimension of the topography
 set y              670
 # max packet in ifq
