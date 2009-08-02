@@ -26,6 +26,7 @@ SCRIPTS
 	* Wired Topology Grid
 	* Wireless Topology Infrastructure
 	* Wired Topology Star
+	* Wireless Topology Line
 	* Wireless Topology Grid Heterogeneous [COMMING SOON]
 	* Wireless Topology Grid Mobile	[COMMING SOON]
 __________________________________________________________________________________________________________________________________________________
@@ -91,3 +92,21 @@ ex: ns wired/star.tcl 5 100
 
 argument-1) the number of peers including the seeder
 argument-2) upload rate = 100 Kbps , download rate = 400 Kbps as I assume given parameter is upload rate so download rate is 4 * 100
+
+__________________________________________________________________________________________________________________________________________________
+
+Wireless Topology Line
+-----------------------
+wireless/grid.tcl <number of peers> <seeder index> <upload data rate> <distance between nodes> <inter-arrival range>
+
+ex: ns wireless/grid.tcl 10 4 100 50 100
+
+here the grid will be as following
+   0	1	2	3	4	5	6	7	8	9
+
+argument-1) the number of nodes/peers
+argument-2) seeder index is 4 so the seeder in the middle
+argument-3) data rate is 4 * 100 = 400 Kbps as I assume given parameter is upload rate so download rate is 4 * 100
+argument-4) distance between each node is 40 meter [OPTIONAL default 40]
+argument-5) maximum inter-arrival time between node [OPTIONAL default 10]
+
