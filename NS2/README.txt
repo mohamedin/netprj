@@ -97,9 +97,9 @@ ________________________________________________________________________________
 
 Wireless Topology Line
 -----------------------
-wireless/grid.tcl <number of peers> <seeder index> <upload data rate> <distance between nodes> <inter-arrival range>
+wireless/line.tcl <number of peers> <seeder index> <upload data rate> <distance between nodes> <inter-arrival range>
 
-ex: ns wireless/grid.tcl 10 4 100 50 100
+ex: ns wireless/line.tcl 10 4 100 50 100
 
 here the grid will be as following
    0	1	2	3	4	5	6	7	8	9
