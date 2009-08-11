@@ -58,19 +58,34 @@
 	set go [new BitTorrentTracker $S_F $S_C]
 	$go tracefile $p2ptrace	
 
+# Location generator
+set t_location_x_rng [new RNG]
+set t_location_x [new RandomVariable/Uniform]
+$t_location_x set min_ 0
+$t_location_x set max_ $x 
+$t_location_x use-rng $t_location_x_rng	
+
+set t_location_y_rng [new RNG]
+set t_location_y [new RandomVariable/Uniform]
+$t_location_y set min_ 0
+$t_location_y set max_ $y 
+$t_location_y use-rng $t_location_y_rng	
+
 #  Create the specified number of nodes [$N_P] and "attach" them to the channel. 
 	for {set i 0} {$i < $N_P } {incr i} {
 		set node_($i) [$ns node]	
 	
 		$ns initial_node_pos $node_($i) 20
 		
-		set X_loc			[expr ($i % $no_of_peers) * $grid_side + 30]
-		set Y_loc			[expr ($i / $no_of_peers) * $grid_side + 30]
+		set X_loc			[$t_location_x value]
+		set Y_loc			[$t_location_y value]
 	
 		$node_($i)	random-motion	0		;# disable random motion
 		$node_($i)	set	X_	$X_loc
 		$node_($i)	set	Y_	$Y_loc
 		$node_($i)	set Z_	0.0
+		
+		puts "node $i at location ($X_loc, $Y_loc)."
 	}
 	
 # Create Seeder
