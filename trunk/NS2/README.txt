@@ -22,14 +22,15 @@ ________________________________________________________________________________
 
 SCRIPTS
 =======
-	* Wireless Topology Grid
-	* Wired Topology Grid
-	* Wireless Topology Infrastructure
-	* Wired Topology Star
-	* Wireless Topology Line
-	* Wireless Topology Grid Heterogeneous [COMMING SOON]
-	* Wireless Topology Grid Mobile	[COMMING SOON]
-__________________________________________________________________________________________________________________________________________________
+	* Wireless Grid Topology
+	* Wired Grid Topology 
+	* Wireless Infrastructure Topology 
+	* Wired Star Topology
+	* Wireless Line Topology 
+	* Wireless Grid Topology Heterogeneous [COMMING SOON]
+	* Wireless Grid Topology Mobile
+	* Wireless Random Topology Mobile
+______________________________________________________________________________________________________________________________________________
 
 Wireless Topology Grid
 -----------------------
@@ -132,3 +133,11 @@ No run the experiment using the following command
 wireless/mobile.tcl <grid dimension> <seeder index> <upload data rate> <distance between nodes> <inter-arrival range>
 
 The parameters are the same as Wireless Grid but here nodes are mobile according to "scen" file, you provided
+
+__________________________________________________________________________________________________________________________________________________
+
+Wireless Topology Random Mobile
+-----------------------------
+
+Same as mobile, but here u do not have to specify the distance between nodes as it is random
+Note that it prints nodes locations at the begining
