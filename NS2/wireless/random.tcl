@@ -58,6 +58,10 @@
 	set go [new BitTorrentTracker $S_F $S_C]
 	$go tracefile $p2ptrace	
 
+if { $grid_side != 40 } {
+	$defaultRNG seed $grid_side
+}
+
 # Location generator
 set t_location_x_rng [new RNG]
 set t_location_x [new RandomVariable/Uniform]
