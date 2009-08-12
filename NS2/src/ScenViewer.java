@@ -32,15 +32,17 @@ public class ScenViewer extends JFrame {
 		        g.setColor(Color.WHITE);
 		        g.fillRect(0, 0, w, h);
 		        
-		        g.setColor(Color.RED);
 		        Iterator <Point> itr = path.iterator();
 		        Point point = itr.next();
+		        g.setColor(Color.BLACK);
 		        g.drawString("Start", point.x, point.y);
+		        g.setColor(Color.RED);
 		        while(itr.hasNext()){
 		        	Point newPoint = itr.next();
 		        	g.drawLine(point.x, point.y, newPoint.x, newPoint.y);
 		        	point = newPoint;
 		        }
+		        g.setColor(Color.BLACK);
 		        g.drawString("end", point.x, point.y);
 		    }
 		});
