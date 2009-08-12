@@ -54,13 +54,15 @@ public class ScenViewer extends JFrame {
 		while((line = reader.readLine())!= null){
 			int i = line.indexOf("set X_");
 			if(i>0){
-				double x = Double.parseDouble(line.substring(i+ 7).trim());
-				double y = Double.parseDouble(reader.readLine().substring(i + 7).trim());
+				double x = Double.parseDouble(line.substring(i+ 7).replaceAll("\"", "").trim());
+				double y = Double.parseDouble(reader.readLine().substring(i + 7).replaceAll("\"", "").trim());
 				path.add(new Point((int)x, (int)y));
 			}
 			i = line.indexOf("setdest");
 			if(i>0){
 				String[] strings = line.substring(i + 7).replaceAll("\"", "").trim().split(" ");
+				if(strings.length<2)
+					continue;
 				double x = Double.parseDouble(strings[0]);
 				double y = Double.parseDouble(strings[1]);
 				path.add(new Point((int)x, (int)y));
