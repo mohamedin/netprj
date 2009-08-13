@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 public class HopCount {
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(new File("C:/trace files/out2.tr")));
+		BufferedReader reader = new BufferedReader(new FileReader(new File("C:/trace files/out.tr")));
 		
-		Pattern pattern = Pattern.compile(".*(\\d|\\.)* _(\\d*)_(ARP|RTR|AGT|LL|IFQ|MAC|PHY|\\s|-)*(\\d*).*\\[.*");
+		Pattern pattern = Pattern.compile(".*(\\d|\\.)* _(\\d*)_(ARP|RTR|AGT|LL|IFQ|MAC|PHY|TOUT|NRTE|TTL|CBK|\\s|-)*(\\d*).*\\[.*");
 		String line = "";
 		Map<String, Set<String>> hops = new HashMap<String, Set<String>>();
 		while((line = reader.readLine())!= null){
