@@ -28,7 +28,7 @@ BitTorrentApp set pipelined_requests 5
 # number of peer addresses requested from tracker:
 # BT wiki: default is 50, each peer can specify wanted number with numwant option
 ##BitTorrentApp set num_from_tracker 50
-BitTorrentApp set num_from_tracker 25
+BitTorrentApp set num_from_tracker 100
 
 # minimum number of peers to not do rerequesting at tracker
 #BitTorrentApp set min_peers 20
@@ -36,7 +36,7 @@ BitTorrentApp set min_peers 10
 
 # number of peers at which to stop initiating new connections
 #BitTorrentApp set max_initiate 40
-BitTorrentApp set max_initiate 20
+BitTorrentApp set max_initiate 100
 
 # maximum number of open connections
 BitTorrentApp set max_open_cons 1000
