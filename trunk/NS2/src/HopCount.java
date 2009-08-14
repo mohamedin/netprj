@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 public class HopCount {
 
-	static final String FILE_NAME = "C:/cygwin/home/Mohamed/NS2/logs/line_Distance=200_Seeder=0_File=1MB_Peers=8_C=12500.0Bps_RandomSeed=3247652354/out.tr";
-	static final double stopTime = 100.0;
+	static final String FILE_NAME = "C:/cygwin/home/Mohamed/NS2/logs/wirelessGrid_Distance=40_Seeder=0_File=1MB_Peers=81_C=12500.0Bps_RandomSeed=457091259/out.tr";
+	static final double stopTime = 10000.0;
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(new File(FILE_NAME)));
@@ -26,6 +26,8 @@ public class HopCount {
 		String line = "";
 		Map<String, List<String>> hops = new HashMap<String, List<String>>();
 		while((line = reader.readLine())!= null){
+			if(line.indexOf("DSR")>=0)
+				continue;
 			Matcher matcher =  pattern.matcher(line);
 			if(matcher.find()){
 				Double time = Double.parseDouble(matcher.group(1));
@@ -68,7 +70,7 @@ public class HopCount {
 		System.err.println("Max Hop Count = " + max);
 		for(Iterator<Entry<Integer, Integer>> itr=clusters.entrySet().iterator(); itr.hasNext(); ){
 			Entry<Integer, Integer> entry = itr.next();
-			System.err.println("Cluster " + entry.getKey() + " - Count:" + entry.getValue() + " \t(" + ((float)entry.getValue()/count*100) + "%)");
+			System.err.println("Cluster " + entry.getKey() + " - Count:" + entry.getValue() + " \t(" + ((float)entry.getValue()/(hops.size()-ignored)*100) + "%)");
 		}
 		System.err.println("All hops = " + count);
 		System.err.println("All Packets = " + (hops.size()-ignored));
