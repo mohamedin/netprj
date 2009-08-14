@@ -17,6 +17,10 @@ set p2ptrace $traceDir
 append p2ptrace /log
 set fh [open $p2ptrace w]
 
+set timeTrace $traceDir
+append timeTrace /time.txt
+set ft [open $timeTrace w]
+
 #Open the nam trace file
 set p2pNAMTrace $traceDir
 append p2pNAMTrace /out.nam

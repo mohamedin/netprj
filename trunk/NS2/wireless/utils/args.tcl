@@ -40,15 +40,20 @@
 	
 #Define a 'finish' procedure
 	proc done {} {
-		global FinishedPeers PeersCount
+		global ns FinishedPeers PeersCount ft fh
 		
-		puts "Peer complete"
+		set now [$ns now]
+		puts $ft "Peer complete $now"		
+		flush $ft
+		flush $fh
+		
+		puts "Peer complete $now"
 			
 		incr FinishedPeers
 		if {$FinishedPeers == $PeersCount } {
 			puts "Ending Simulation..."
 				
-			global ns fh app
+			global app
 			global p2pNAMTrace nf
 	
 			for {set i 0} {$i < $PeersCount } {incr i} {
@@ -60,6 +65,8 @@
 			$ns flush-trace
 			#Close the trace file
 			close $nf
+
+			close $fh
 			#Execute nam on the trace file
 			#exec nam $p2pNAMTrace &
 			exit 0
