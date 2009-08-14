@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -14,22 +16,29 @@ import java.util.regex.Pattern;
 
 public class HopCount {
 
+	static final String FILE_NAME = "C:/cygwin/home/Mohamed/NS2/logs/line_Distance=200_Seeder=0_File=1MB_Peers=8_C=12500.0Bps_RandomSeed=3247652354/out.tr";
+	static final double stopTime = 100.0;
+	
 	public static void main(String[] args) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(new File("C:/trace files/out.tr")));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(FILE_NAME)));
 		
-		Pattern pattern = Pattern.compile(".*(\\d|\\.)* _(\\d*)_(ARP|RTR|AGT|LL|IFQ|MAC|PHY|TOUT|NRTE|TTL|CBK|\\s|-)*(\\d*).*\\[.*");
+		Pattern pattern = Pattern.compile(".+ (\\d+\\.\\d+)\\s*_(\\d+)_(ARP|RTR|AGT|LL|IFQ|MAC|PHY|TOUT|NRTE|TTL|CBK|\\s|-)*(\\d*).*\\[.*");
 		String line = "";
-		Map<String, Set<String>> hops = new HashMap<String, Set<String>>();
+		Map<String, List<String>> hops = new HashMap<String, List<String>>();
 		while((line = reader.readLine())!= null){
 			Matcher matcher =  pattern.matcher(line);
 			if(matcher.find()){
+				Double time = Double.parseDouble(matcher.group(1));
+				if(time > stopTime)
+					break;
 				String node = matcher.group(2);
 				String packet = matcher.group(4);
 				if(packet.length()!=0){
-					Set<String> set = hops.get(packet);
+					List<String> set = hops.get(packet);
 					if(set==null)
-						set = new HashSet<String>();
-					set.add(node);
+						set = new LinkedList<String>();
+					if(!set.contains(node))
+						set.add(node);
 					hops.put(packet, set);
 					continue;
 				}
@@ -40,12 +49,15 @@ public class HopCount {
 		int max = 0;
 		int count = 0;
 		int ignored = 0;
-		for(Iterator<Entry<String, Set<String>>> itr=hops.entrySet().iterator(); itr.hasNext(); ){
-			Entry<String, Set<String>> entry = itr.next();
-			Set<String> path = entry.getValue();
+		Map<Integer, Integer> clusters = new HashMap<Integer, Integer>();
+		for(Iterator<Entry<String, List<String>>> itr=hops.entrySet().iterator(); itr.hasNext(); ){
+			Entry<String, List<String>> entry = itr.next();
+			List<String> path = entry.getValue();
 			int hopCount = path.size() - 1;
 			if(hopCount==0)
 				ignored++;
+			Integer c = clusters.get(hopCount);
+			clusters.put(hopCount, (c==null ? 1 : c+1));
 			count += hopCount;
 			if(hopCount>max){
 				max = hopCount;
@@ -54,6 +66,10 @@ public class HopCount {
 		}
 	
 		System.err.println("Max Hop Count = " + max);
+		for(Iterator<Entry<Integer, Integer>> itr=clusters.entrySet().iterator(); itr.hasNext(); ){
+			Entry<Integer, Integer> entry = itr.next();
+			System.err.println("Cluster " + entry.getKey() + " - Count:" + entry.getValue() + " \t(" + ((float)entry.getValue()/count*100) + "%)");
+		}
 		System.err.println("All hops = " + count);
 		System.err.println("All Packets = " + (hops.size()-ignored));
 		System.err.println("Avg Hop Count = " + ((double)count/(hops.size()-ignored)));
