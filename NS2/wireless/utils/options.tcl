@@ -17,3 +17,5 @@ set ifqlen         50
 set adhocRouting   DSR
 
 Mac/802_11 set dataRate_   [expr $C_down_fac * $C_up]            ;# bps  
+
+Phy/WirelessPhy set RXThresh_ 1.92278e-06
